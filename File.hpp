@@ -41,10 +41,10 @@ public:
     std::cout << "File size : " << this->_filesize << std::endl;
   };
 
-  void		copyTo(const std::string &str, void (*ptrf)(ssize_t, void *, std::string)) {
+  void		copyTo(const std::string &str, void (*ptrf)(ssize_t, ssize_t, void *, std::string)) {
     int		fd_to, fd_from;
     char	buf[4096];
-    ssize_t	nread;
+    ssize_t	nread, total_written = 0;
     int		saved_errno;
 
     fd_from = open(this->_filename.c_str(), O_RDONLY);
@@ -62,9 +62,8 @@ public:
 
 	do {
 	  nwritten = write(fd_to, out_ptr, nread);
-
-	  //std::cout << "Written : " << nwritten << std::endl;
-	  ptrf(nwritten, this, str);
+	  total_written += nwritten;
+	  ptrf(nwritten, total_written, this, str);
 	  if (nwritten >= 0)
 	    {
 	      nread -= nwritten;
@@ -89,13 +88,13 @@ public:
 	      close(fd_to);
 	  }
 	close(fd_from);
-	
-	/* Success! */
+	printf("\n");
 	return;
       }
     close(fd_from);
     if (fd_to >= 0)
       close(fd_to);
+    printf("\n");
     throw std::logic_error("Unknown error");
   };
 
@@ -103,6 +102,10 @@ public:
 public:
   std::string	getFilename() const {
     return this->_filename;
+  };
+
+  long		getSize() const {
+    return this->_filesize;
   };
 };
 
