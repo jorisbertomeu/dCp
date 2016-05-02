@@ -1,5 +1,12 @@
 #include	<File.hpp>
 
+void		tmpCopyCalllback(ssize_t written, void *o, std::string to)
+{
+  File		*from = reinterpret_cast<File*>(o);
+  
+  std::cout << "Copy " << written << " bytes from " << from->getFilename() << " to " << to << std::endl;
+}
+
 int		main(int ac, char *argv[])
 {
   File		file;
@@ -10,7 +17,7 @@ int		main(int ac, char *argv[])
   }
   try {
     file.from(std::string(argv[1]));
-    file.copyTo(argv[2]);
+    file.copyTo(argv[2], tmpCopyCalllback);
     file.debug();
   } catch (const std::exception &e) {
     std::cout << "Error caught : " << e.what() << std::endl;

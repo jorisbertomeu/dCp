@@ -41,7 +41,7 @@ public:
     std::cout << "File size : " << this->_filesize << std::endl;
   };
 
-  void		copyTo(const std::string &str) {
+  void		copyTo(const std::string &str, void (*ptrf)(ssize_t, void *, std::string)) {
     int		fd_to, fd_from;
     char	buf[4096];
     ssize_t	nread;
@@ -63,6 +63,8 @@ public:
 	do {
 	  nwritten = write(fd_to, out_ptr, nread);
 
+	  //std::cout << "Written : " << nwritten << std::endl;
+	  ptrf(nwritten, this, str);
 	  if (nwritten >= 0)
 	    {
 	      nread -= nwritten;
