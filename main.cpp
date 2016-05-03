@@ -16,7 +16,7 @@ int			main(int ac, char *argv[])
   Parameters		p;
   std::vector<int>	idxUnknown;
   std::vector<File*>	fileList;
-  std::string		destination;
+  std::string		destination = "";
   struct stat		s;
   
   try {
@@ -25,9 +25,9 @@ int			main(int ac, char *argv[])
       if (std::distance(idxUnknown.begin(), it) == (idxUnknown.size() - 1))
 	destination = std::string(argv[*it]);
       else {
-	if (stat(argv[*it], &s) == 0) //Check for target
+	if (stat(argv[*it], &s) == 0)
 	  {
-	    if ( s.st_mode & S_IFDIR) { //ITS DIR
+	    if ( s.st_mode & S_IFDIR) {
 	      std::cout << "Omitting directory \"" << std::string(argv[*it]) << "\"" << std::endl;
 	    } else if (s.st_mode & S_IFREG) { //ITS FILE
 	      fileList.push_back(new File(std::string(argv[*it])));	
@@ -35,10 +35,12 @@ int			main(int ac, char *argv[])
 	      
 	    }
 	  } else { //DOES NOT EXIST
-	  
+	  std::cout << "File \"" << std::string(argv[*it]) << "\" does not exist" << std::endl;
 	}
       }
     }
+    if (fileList.size() == 0)
+      p.showUsage();
     for (std::vector<File*>::iterator it = fileList.begin(); it != fileList.end(); ++it) {
       try {
 	(*it)->copyTo(destination, tmpCopyCalllback);
