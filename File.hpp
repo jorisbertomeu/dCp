@@ -58,7 +58,7 @@ public:
     if (fd_from < 0)
       throw std::logic_error("Error while opening target file");
 
-    if (stat(str.c_str(), &s) == 0)
+    if (stat(str.c_str(), &s) == 0) //Check for dest
       {
 	if ( s.st_mode & S_IFDIR) { //ITS DIR
 	  if (str.c_str()[str.size() - 1] == '/')
@@ -116,7 +116,6 @@ public:
     close(fd_from);
     if (fd_to >= 0)
       close(fd_to);
-    printf("\n");
     throw std::logic_error("Unknown error");
   };
 

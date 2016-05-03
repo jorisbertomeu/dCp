@@ -17,6 +17,7 @@ int			main(int ac, char *argv[])
   std::vector<int>	idxUnknown;
   std::vector<File*>	fileList;
   std::string		destination;
+  struct stat		s;
   
   try {
     idxUnknown = p.parse(ac, argv);
@@ -24,15 +25,27 @@ int			main(int ac, char *argv[])
       if (std::distance(idxUnknown.begin(), it) == (idxUnknown.size() - 1))
 	destination = std::string(argv[*it]);
       else {
-	fileList.push_back(new File(std::string(argv[*it])));	
+	if (stat(argv[*it], &s) == 0) //Check for target
+	  {
+	    if ( s.st_mode & S_IFDIR) { //ITS DIR
+	      std::cout << "Omitting directory \"" << std::string(argv[*it]) << "\"" << std::endl;
+	    } else if (s.st_mode & S_IFREG) { //ITS FILE
+	      fileList.push_back(new File(std::string(argv[*it])));	
+	    } else { //ITS OTHER
+	      
+	    }
+	  } else { //DOES NOT EXIST
+	  
+	}
       }
     }
     for (std::vector<File*>::iterator it = fileList.begin(); it != fileList.end(); ++it) {
-      (*it)->copyTo(destination, tmpCopyCalllback);
+      try {
+	(*it)->copyTo(destination, tmpCopyCalllback);
+      } catch (const std::exception &e) {
+	std::cout << "Error while copying \"" << (*it)->getFilename() << "\"" << std::endl;
+      }
     }
-    // file.from(std::string(argv[1]));
-    // file.copyTo(argv[2], tmpCopyCalllback);
-    // file.debug();
   } catch (const std::exception &e) {
     std::cout << "Error caught : " << e.what() << std::endl;
   }
