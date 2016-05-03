@@ -9,6 +9,7 @@
 # include	<fcntl.h>
 # include	<unistd.h>
 # include	<errno.h>
+# include	<sys/stat.h>
 
 class		File
 {
@@ -22,6 +23,11 @@ public:
     this->_filesize = -1;
   };
 
+  explicit	File(const std::string &str) {
+    this->_filesize = -1;
+    this->from(str);
+  };
+  
   virtual	~File() {
 
   };
@@ -32,7 +38,7 @@ public:
     this->_filename = str;
     std::ifstream in(str.c_str(), std::ifstream::ate | std::ifstream::binary);
     if ((this->_filesize = (long) (in.tellg())) <= -1)
-      throw std::logic_error("File not found");
+      throw std::logic_error(std::string("File " + str + " not found"));
   };
 
   void		debug() const {
@@ -41,19 +47,35 @@ public:
     std::cout << "File size : " << this->_filesize << std::endl;
   };
 
-  void		copyTo(const std::string &str, void (*ptrf)(ssize_t, ssize_t, void *, std::string)) {
+  void		copyTo(std::string str, void (*ptrf)(ssize_t, ssize_t, void *, std::string)) {
     int		fd_to, fd_from;
     char	buf[4096];
     ssize_t	nread, total_written = 0;
     int		saved_errno;
-
+    struct stat s;
+    
     fd_from = open(this->_filename.c_str(), O_RDONLY);
     if (fd_from < 0)
       throw std::logic_error("Error while opening target file");
 
-    fd_to = open(str.c_str(), O_WRONLY | O_CREAT | O_EXCL, 0666);
+    if (stat(str.c_str(), &s) == 0)
+      {
+	if ( s.st_mode & S_IFDIR) { //ITS DIR
+	  if (str.c_str()[str.size() - 1] == '/')
+	    str += this->_filename;
+	  else
+	    str += "/" + this->_filename;
+	} else if (s.st_mode & S_IFREG) { //ITS FILE
+	  
+	} else { //ITS OTHER
+	  
+	}
+      } else { //DOES NOT EXIST
+      
+    }
+    fd_to = open(str.c_str(), O_WRONLY | O_CREAT, 0666);
     if (fd_to < 0)
-      throw std::logic_error("Error while opening destination file");
+      throw std::logic_error(std::string("Error while opening destination file \"" + str + "\""));
 
     while (nread = read(fd_from, buf, sizeof buf), nread > 0)
       {
