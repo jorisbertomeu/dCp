@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NBR_TEST=4
+NBR_TEST=5
 
 function checkDiff() {
     echo -e "\033[34mTesting difference between both files $1 and $2\033[0m"
@@ -58,6 +58,20 @@ else
     ./dcp ./tests/test4/testBigFile.zip ./tests/test4/testBigFileCopied.zip
     checkDiff ./tests/test4/testBigFile.zip ./tests/test4/testBigFileCopied.zip
 fi
+echo -e "\033[33m----------------------\033[0m"
+#TEST 5
+echo -e "\033[33m----- [TEST 5/$NBR_TEST] -----\033[0m"
+echo -e "\033[34mDescription : Basic copy (Multiple files)\033[0m"
+echo "Downloading file ... Please, wait"
+mkdir ./tests/test5
+wget https://github.com/jorisbertomeu/dCp/archive/master.zip -o ./tests/test5/download.log
+mv master.zip ./tests/test5/testMultipleFile.zip
+unzip ./tests/test5/testMultipleFile.zip -d ./tests/test5/
+mkdir ./tests/test5/result
+./dcp ./tests/test5/dCp-master/* ./tests/test5/result/
+ls -l ./tests/test5/dCp-master/ | awk '{print $5, $9}' > ./tests/test5/.r1
+ls -l ./tests/test5/result/ | awk '{print $5, $9}' > ./tests/test5/.r2
+checkDiff ./tests/test5/.r1 ./tests/test5/.r2
 echo -e "\033[33m----------------------\033[0m"
 #LS SUMMARY
 ls -Rrtl ./tests
