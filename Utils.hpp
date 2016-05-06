@@ -16,6 +16,7 @@
 # include	<sstream>
 # include	<stdexcept>
 # include	<list>
+# include	<math.h>
 
 static size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream)
 {
@@ -46,6 +47,17 @@ public:
       return(s.substr(i + 1, s.length() - i));
     }
     return("");
+  };
+
+  static std::string humanReadableByteCount(long bytes, bool si) {
+    char pre[3];
+    int unit = si ? 1000 : 1024;
+    if (bytes < unit) return std::string(std::to_string(bytes) + " B");
+    int exp = (int) (log(bytes) / log(unit));
+    pre[0] = (si ? "kMGTPE" : "KMGTPE")[exp-1];
+    pre[1] = (si ? '\0' : 'i');
+    pre[2] = 0;
+    return std::string(std::to_string((bytes / pow(unit, exp))) + " " + pre + "B");
   };
 };
 
