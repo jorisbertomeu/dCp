@@ -42,7 +42,7 @@ public:
 	    } else if (s.st_mode & S_IFREG) { //ITS FILE
 	      this->_fileList.push_back(new File(std::string(argv[*it])));	
 	    } else { //ITS OTHER
-	      
+	      throw std::logic_error(std::string("Symlink? not supported yet .. Sorry"));
 	    }
 	  } else { //DOES NOT EXIST
 	  std::cout << "File \"" << std::string(argv[*it]) << "\" does not exist" << std::endl;
@@ -58,7 +58,7 @@ public:
       try {
 	(*it)->copyTo(this->_destination, this->_simpleCopyCallback);
       } catch (const std::exception &e) {
-	std::cout << "Error while copying \"" << (*it)->getFilename() << "\"" << std::endl;
+	std::cout << "Error while copying \"" << (*it)->getFilename() << "\" => " << e.what() << std::endl;
       }
     }
   };

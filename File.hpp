@@ -68,9 +68,9 @@ public:
 	  else
 	    str += "/" + Utils::getFilename(this->_filename);
 	} else if (s.st_mode & S_IFREG) { //ITS FILE
-	  
+	  throw std::logic_error(std::string("A file named \"" + str + "\" already exists"));
 	} else { //ITS OTHER
-	  
+	  throw std::logic_error(std::string("A symlink? named \"" + str + "\" already exists"));
 	}
       } else { //DOES NOT EXIST
       
