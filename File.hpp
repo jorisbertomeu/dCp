@@ -11,6 +11,8 @@
 # include	<errno.h>
 # include	<sys/stat.h>
 
+# include	<Utils.hpp>
+
 class		File
 {
 private:
@@ -62,9 +64,9 @@ public:
       {
 	if ( s.st_mode & S_IFDIR) { //ITS DIR
 	  if (str.c_str()[str.size() - 1] == '/')
-	    str += this->_filename;
+	    str += Utils::getFilename(this->_filename);
 	  else
-	    str += "/" + this->_filename;
+	    str += "/" + Utils::getFilename(this->_filename);
 	} else if (s.st_mode & S_IFREG) { //ITS FILE
 	  
 	} else { //ITS OTHER
