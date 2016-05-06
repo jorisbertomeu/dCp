@@ -1,2 +1,2 @@
 all:
-		g++ main.cpp -I. -o dcp
+		clang++ main.cpp -I. -o dcp

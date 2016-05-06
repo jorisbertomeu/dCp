@@ -50,7 +50,7 @@ private:
     this->_details = true;
     return (0);
   };
-  
+
   int		showHelp(int ac, char **argv, int idx) {
     (void) ac;
     (void) argv;
